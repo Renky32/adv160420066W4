@@ -18,6 +18,7 @@ class StudentListAdapter(val studentList:ArrayList<Student>)
             LayoutInflater.from(parent.context), parent, false)
         return StudentViewHolder(binding)
 
+
     }
 
     override fun getItemCount(): Int {
