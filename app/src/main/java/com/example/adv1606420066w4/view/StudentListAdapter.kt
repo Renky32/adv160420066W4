@@ -1,21 +1,25 @@
 package com.example.adv1606420066w4.view
 
+import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
 import com.example.adv1606420066w4.databinding.StudentListItemBinding
 import com.example.adv1606420066w4.model.Student
+import com.squareup.picasso.Callback
+import com.squareup.picasso.Picasso
 
 class StudentListAdapter(val studentList:ArrayList<Student>)
-    : RecyclerView.Adapter<StudentListAdapter.StudentViewHolder>()
-{
-    class StudentViewHolder(var binding: StudentListItemBinding)
-        :RecyclerView.ViewHolder(binding.root)
+    : RecyclerView.Adapter<StudentListAdapter.StudentViewHolder>() {
+    class StudentViewHolder(var binding: StudentListItemBinding) :
+        RecyclerView.ViewHolder(binding.root)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): StudentViewHolder {
         val binding = StudentListItemBinding.inflate(
-            LayoutInflater.from(parent.context), parent, false)
+            LayoutInflater.from(parent.context), parent, false
+        )
         return StudentViewHolder(binding)
 
 
@@ -33,14 +37,29 @@ class StudentListAdapter(val studentList:ArrayList<Student>)
             val action = StudentListFragmentDirections.actionStudentDetail()
             Navigation.findNavController(it).navigate(action)
         }
+        val picasso = Picasso.Builder(holder.itemView.context)
+        picasso.listener { picasso, uri, exception ->
+            exception.printStackTrace()
+        }
+        picasso.build().load(studentList[position].photoUrl)
+            .into(holder.binding.imgStudent, object: Callback {
+                override fun onSuccess() {
+                    holder.binding.progressImage.visibility = View.INVISIBLE
+                    holder.binding.imgStudent.visibility = View.VISIBLE
+                }
+
+                override fun onError(e: Exception?) {
+                    Log.e("picasso_error", e.toString())
+                }
+
+            })
+
 
     }
+
     fun updateStudentList(newStudentList: ArrayList<Student>) {
         studentList.clear()
         studentList.addAll(newStudentList)
         notifyDataSetChanged()
     }
-
-
-
 }

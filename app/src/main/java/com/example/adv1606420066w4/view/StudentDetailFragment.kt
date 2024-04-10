@@ -1,6 +1,7 @@
 package com.example.adv1606420066w4.view
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -12,18 +13,11 @@ import com.example.adv1606420066w4.R
 import com.example.adv1606420066w4.databinding.FragmentStudentDetailBinding
 import com.example.adv1606420066w4.databinding.FragmentStudentListBinding
 import com.example.adv1606420066w4.viewmodel.DetailViewModel
-import com.example.adv1606420066w4.viewmodel.ListViewModel
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.schedulers.Schedulers
+import java.util.concurrent.TimeUnit
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [StudentDetailFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class StudentDetailFragment : Fragment() {
     private lateinit var viewModel: DetailViewModel
     private lateinit var binding : FragmentStudentDetailBinding
@@ -48,7 +42,28 @@ class StudentDetailFragment : Fragment() {
             binding.txtName.setText(it.name)
             binding.txtBOD.setText(it.bod)
             binding.txtNumber.setText(it.phone)
+
+            //observeViewModel()
+        })
+
+    }
+    fun observeViewModel(holder: StudentListAdapter.StudentViewHolder, position: Int) {
+        viewModel.studentLD.observe(viewLifecycleOwner, Observer {
+            var student = it
+            holder.binding.btnUpdate?.setOnClickListener {
+                Observable.timer(5, TimeUnit.SECONDS)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe {
+                        Log.d("Messages", "five seconds")
+                        MainActivity.showNotification(student.name.toString(),
+                            "A new notification created",
+                            R.drawable.baseline_person_add_24)
+                    }
+
+            }
+
         })
     }
-
 }
+
