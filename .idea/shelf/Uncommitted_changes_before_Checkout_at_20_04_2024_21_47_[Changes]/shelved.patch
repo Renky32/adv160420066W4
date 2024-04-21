@@ -1,0 +1,38 @@
+Index: app/src/main/java/com/example/adv1606420066w4/view/StudentListAdapter.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.adv1606420066w4.view\r\n\r\nimport android.util.Log\r\nimport android.view.LayoutInflater\r\nimport android.view.View\r\nimport android.view.ViewGroup\r\nimport androidx.navigation.Navigation\r\nimport androidx.recyclerview.widget.RecyclerView\r\nimport com.example.adv1606420066w4.databinding.StudentListItemBinding\r\nimport com.example.adv1606420066w4.model.Student\r\nimport com.squareup.picasso.Callback\r\nimport com.squareup.picasso.Picasso\r\n\r\nclass StudentListAdapter(val studentList:ArrayList<Student>)\r\n    : RecyclerView.Adapter<StudentListAdapter.StudentViewHolder>() {\r\n    class StudentViewHolder(var binding: StudentListItemBinding) :\r\n        RecyclerView.ViewHolder(binding.root)\r\n\r\n    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): StudentViewHolder {\r\n        val binding = StudentListItemBinding.inflate(\r\n            LayoutInflater.from(parent.context), parent, false\r\n        )\r\n        return StudentViewHolder(binding)\r\n\r\n\r\n    }\r\n\r\n    override fun getItemCount(): Int {\r\n        return studentList.size\r\n    }\r\n\r\n    override fun onBindViewHolder(holder: StudentViewHolder, position: Int) {\r\n        holder.binding.txtID.text = studentList[position].id\r\n        holder.binding.txtName.text = studentList[position].name\r\n        val studentID = studentList[position].id\r\n\r\n        holder.binding.btnDetail.setOnClickListener {\r\n            val action = StudentListFragmentDirections.actionStudentDetail()\r\n            Navigation.findNavController(it).navigate(action)\r\n        }\r\n        val picasso = Picasso.Builder(holder.itemView.context)\r\n        picasso.listener { picasso, uri, exception ->\r\n            exception.printStackTrace()\r\n        }\r\n        picasso.build().load(studentList[position].photoUrl)\r\n            .into(holder.binding.imgStudent, object: Callback {\r\n                override fun onSuccess() {\r\n                    holder.binding.progressImage.visibility = View.INVISIBLE\r\n                    holder.binding.imgStudent.visibility = View.VISIBLE\r\n                }\r\n\r\n                override fun onError(e: Exception?) {\r\n                    Log.e(\"picasso_error\", e.toString())\r\n                }\r\n\r\n            })\r\n\r\n\r\n    }\r\n\r\n    fun updateStudentList(newStudentList: ArrayList<Student>) {\r\n        studentList.clear()\r\n        studentList.addAll(newStudentList)\r\n        notifyDataSetChanged()\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/adv1606420066w4/view/StudentListAdapter.kt b/app/src/main/java/com/example/adv1606420066w4/view/StudentListAdapter.kt
+--- a/app/src/main/java/com/example/adv1606420066w4/view/StudentListAdapter.kt	
++++ b/app/src/main/java/com/example/adv1606420066w4/view/StudentListAdapter.kt	
+@@ -21,8 +21,6 @@
+             LayoutInflater.from(parent.context), parent, false
+         )
+         return StudentViewHolder(binding)
+-
+-
+     }
+ 
+     override fun getItemCount(): Int {
+Index: app/src/main/java/com/example/adv1606420066w4/view/StudentListFragment.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.adv1606420066w4.view\r\n\r\nimport android.os.Bundle\r\nimport androidx.fragment.app.Fragment\r\nimport android.view.LayoutInflater\r\nimport android.view.View\r\nimport android.view.ViewGroup\r\nimport androidx.lifecycle.Observer\r\nimport androidx.lifecycle.ViewModelProvider\r\nimport androidx.recyclerview.widget.LinearLayoutManager\r\nimport com.example.adv1606420066w4.R\r\nimport com.example.adv1606420066w4.databinding.FragmentStudentListBinding\r\nimport com.example.adv1606420066w4.viewmodel.ListViewModel\r\n\r\nclass StudentListFragment : Fragment() {\r\n    private lateinit var viewModel: ListViewModel\r\n    private val studentListAdapter  = StudentListAdapter(arrayListOf())\r\n    private lateinit var binding: FragmentStudentListBinding\r\n\r\n    override fun onCreateView(\r\n\r\n        inflater: LayoutInflater, container: ViewGroup?,\r\n        savedInstanceState: Bundle?\r\n    ): View? {\r\n        binding = FragmentStudentListBinding.inflate(inflater,container, false)\r\n        return binding.root\r\n\r\n    }\r\n    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {\r\n        super.onViewCreated(view, savedInstanceState)\r\n\r\n        viewModel = ViewModelProvider(this).get(ListViewModel::class.java)\r\n        viewModel.refresh()\r\n\r\n        binding.recView.layoutManager = LinearLayoutManager(context)\r\n        binding.recView.adapter = studentListAdapter\r\n        observeViewModel()\r\n        binding.refreshLayout.setOnRefreshListener {\r\n            binding.recView.visibility = View.GONE\r\n            binding.txtError.visibility = View.GONE\r\n            binding.progressLoad.visibility = View.VISIBLE\r\n            viewModel.refresh()\r\n            binding.refreshLayout.isRefreshing = false\r\n        }\r\n\r\n\r\n    }\r\n\r\n\r\n    fun observeViewModel(){\r\n        viewModel.studentsLD.observe(viewLifecycleOwner, Observer {\r\n            studentListAdapter.updateStudentList(it)\r\n        })\r\n        viewModel.studentLoadErrorLD.observe(viewLifecycleOwner, Observer {\r\n            if(it == true) {\r\n                binding.txtError?.visibility = View.VISIBLE\r\n            } else {\r\n                binding.txtError?.visibility = View.GONE\r\n            }\r\n        })\r\n        viewModel.loadingLD.observe(viewLifecycleOwner, Observer {\r\n            if(it == true) {\r\n                binding.recView.visibility = View.GONE\r\n                binding.progressLoad.visibility = View.VISIBLE\r\n            } else {\r\n                binding.recView.visibility = View.VISIBLE\r\n                binding.progressLoad.visibility = View.GONE\r\n            }\r\n        })\r\n    }\r\n\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/adv1606420066w4/view/StudentListFragment.kt b/app/src/main/java/com/example/adv1606420066w4/view/StudentListFragment.kt
+--- a/app/src/main/java/com/example/adv1606420066w4/view/StudentListFragment.kt	
++++ b/app/src/main/java/com/example/adv1606420066w4/view/StudentListFragment.kt	
+@@ -42,8 +42,6 @@
+             viewModel.refresh()
+             binding.refreshLayout.isRefreshing = false
+         }
+-
+-
+     }
+ 
+ 

@@ -1,0 +1,18 @@
+[
+    {
+        "merged": "com.example.adv1606420066w4.app-mergeDebugResources-47:/layout/student_list_item.xml",
+        "source": "com.example.adv1606420066w4.app-main-50:/layout/student_list_item.xml"
+    },
+    {
+        "merged": "com.example.adv1606420066w4.app-mergeDebugResources-47:/layout/fragment_student_detail.xml",
+        "source": "com.example.adv1606420066w4.app-main-50:/layout/fragment_student_detail.xml"
+    },
+    {
+        "merged": "com.example.adv1606420066w4.app-mergeDebugResources-47:/layout/activity_main.xml",
+        "source": "com.example.adv1606420066w4.app-main-50:/layout/activity_main.xml"
+    },
+    {
+        "merged": "com.example.adv1606420066w4.app-mergeDebugResources-47:/layout/fragment_student_list.xml",
+        "source": "com.example.adv1606420066w4.app-main-50:/layout/fragment_student_list.xml"
+    }
+]
